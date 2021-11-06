@@ -14,7 +14,7 @@ import java.util.Optional;
 public record MethodData(
         Optional<String> name,
         List<String> modifiers,
-        String type,
+        String typeId,
         List<ParamData> parameters,
         DescriptorData returnType,
         boolean vararg,
@@ -26,11 +26,11 @@ public record MethodData(
         JsonObject json = new JsonObject();
         name.ifPresent(s -> json.addProperty("name", s));
         json.add("modifiers", JsonUtil.array(modifiers));
-        json.addProperty("type", type);
+        json.addProperty("typeId", typeId);
         json.add("parameters", JsonUtil.array(parameters, ParamData::json));
         json.add("return", returnType.json());
         if (vararg) json.addProperty("vararg", true);
-        json.add("throws", JsonUtil.array(thrownTypes, DescriptorData::json));
+        if (!thrownTypes.isEmpty()) json.add("throws", JsonUtil.array(thrownTypes, DescriptorData::json));
         doc.ifPresent(d -> json.add("doc", d.json()));
         return json;
     }
@@ -50,12 +50,12 @@ public record MethodData(
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static MethodData from(Optional<String> name, DocEnv env, ExecutableElement element) {
         List<String> modifiers = element.getModifiers().stream().map(Modifier::toString).sorted(ModifierUtil.MODIFIER_ORDER).toList();
-        String type = element.asType().toString();
+        String typeId = element.asType().toString();
         List<ParamData> parameters = element.getParameters().stream().map(p -> ParamData.from(env, p)).toList();
         DescriptorData returnType = DescriptorData.from(env, element.getReturnType());
         boolean vararg = element.isVarArgs();
         List<DescriptorData> thrownTypes = element.getThrownTypes().stream().map(t -> DescriptorData.from(env, t)).toList();
         Optional<DocData> doc = DocData.from(env, element);
-        return new MethodData(name, modifiers, type, parameters, returnType, vararg, thrownTypes, doc);
+        return new MethodData(name, modifiers, typeId, parameters, returnType, vararg, thrownTypes, doc);
     }
 }

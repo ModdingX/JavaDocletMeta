@@ -42,7 +42,7 @@ public record ParamData(
         DocTreePath basePath = DocTreePath.getPath(elemPath, tree, tree);
         for (DocTree block : tree.getBlockTags()) {
             if (block.getKind() == DocTree.Kind.PARAM && block instanceof ParamTree pt) {
-                if (!pt.isTypeParameter() && pt.getName().getName().contentEquals(name)) {
+                if (!pt.isTypeParameter() && name.equals(pt.getName().getName().toString())) {
                     return Optional.of(HtmlConverter.asDocHtml(env, DocTreePath.getPath(basePath, pt), pt.getDescription()));
                 }
             }

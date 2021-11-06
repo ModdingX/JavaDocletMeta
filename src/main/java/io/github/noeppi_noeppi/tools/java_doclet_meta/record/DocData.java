@@ -23,7 +23,7 @@ public record DocData(
         JsonObject json = new JsonObject();
         json.addProperty("summary", summary);
         json.addProperty("text", text);
-        json.add("properties", JsonUtil.array(properties, DocBlockData::json));
+        if (!properties.isEmpty()) json.add("properties", JsonUtil.array(properties, DocBlockData::json));
         return json;
     }
     

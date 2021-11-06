@@ -30,7 +30,7 @@ public record ClassData(
         JsonObject json = new JsonObject();
         json.addProperty("name", binaryName);
         json.addProperty("simpleName", simpleName);
-        json.addProperty("sourceNam", sourceName);
+        json.addProperty("sourceName", sourceName);
         json.add("modifiers", JsonUtil.array(modifiers));
         if (nesting != NestingKind.TOP_LEVEL) json.addProperty("nesting", nesting.name().toLowerCase(Locale.ROOT));
         superClass.ifPresent(s -> json.add("superClass", s.json()));
@@ -78,7 +78,7 @@ public record ClassData(
     private static Optional<TypeData> superClassName(DocEnv env, TypeElement element) {
         Optional<TypeData> result = TypeData.from(env, element.getSuperclass());
         if (result.isPresent()) return result;
-        if (env.elements().getBinaryName(element).contentEquals("java.lang.Object")) return Optional.empty();
+        if (env.elements().getBinaryName(element).toString().equals("java.lang.Object")) return Optional.empty();
         return Optional.of(TypeData.ROOT);
     }
     
