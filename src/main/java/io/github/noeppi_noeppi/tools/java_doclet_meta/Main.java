@@ -25,7 +25,6 @@ public class Main implements Doclet {
     public static final Gson GSON = ((Supplier<Gson>) () -> {
         GsonBuilder builder = new GsonBuilder();
         builder.disableHtmlEscaping();
-        builder.setPrettyPrinting();
         return builder.create();
     }).get();
     
@@ -63,14 +62,17 @@ public class Main implements Doclet {
         try {
             DocEnv env = new DocEnv(environment.getElementUtils(), environment.getTypeUtils(), environment.getDocTrees());
             Path base = destinationDir.path();
+            DocIndex index = new DocIndex();
             for (Element element : environment.getIncludedElements()) {
                 if ((element.getKind().isClass() || element.getKind().isInterface()) && element instanceof TypeElement type) {
                     ClassData data = ClassData.from(env, type);
+                    index.add(data);
                     Path dest = base.resolve(data.binaryName() + ".json");
                     Files.createDirectories(dest.getParent());
                     Files.writeString(dest, GSON.toJson(data.json()) + "\n", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 }
             }
+            Files.writeString(base.resolve("index.json"), GSON.toJson(index.json()) + "\n", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

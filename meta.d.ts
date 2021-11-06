@@ -1,3 +1,8 @@
+export interface MetaIndex {
+    classes: Record<string, string>
+    members: Record<string, string[]>
+}
+
 export interface JavaClass {
     name: string
     simpleName: string
