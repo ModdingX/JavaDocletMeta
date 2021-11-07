@@ -31,7 +31,7 @@ public class DocIndex {
         classes.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e -> c.addProperty(e.getKey(), e.getValue()));
         
         JsonObject m = new JsonObject();
-        members.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e -> c.add(e.getKey(), JsonUtil.array(e.getValue().stream().sorted().toList())));
+        members.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e -> m.add(e.getKey(), JsonUtil.array(e.getValue().stream().sorted().toList())));
         
         JsonObject json = new JsonObject();
         json.add("classes", c);
