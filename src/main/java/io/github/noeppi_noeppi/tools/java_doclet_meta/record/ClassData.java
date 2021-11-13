@@ -58,11 +58,13 @@ public record ClassData(
         ArrayList<MethodData> methods = new ArrayList<>();
         
         for (Element elem : element.getEnclosedElements()) {
-            switch (elem.getKind()) {
-                case ENUM_CONSTANT -> enumConstants.add(elem.getSimpleName().toString());
-                case FIELD -> fields.add(FieldData.from(env, (VariableElement) elem));
-                case CONSTRUCTOR -> constructors.add(MethodData.fromUnnamed(env, (ExecutableElement) elem));
-                case METHOD -> methods.add(MethodData.from(env, (ExecutableElement) elem));
+            if (!elem.getModifiers().contains(Modifier.PRIVATE)) {
+                switch (elem.getKind()) {
+                    case ENUM_CONSTANT -> enumConstants.add(elem.getSimpleName().toString());
+                    case FIELD -> fields.add(FieldData.from(env, (VariableElement) elem));
+                    case CONSTRUCTOR -> constructors.add(MethodData.fromUnnamed(env, (ExecutableElement) elem));
+                    case METHOD -> methods.add(MethodData.from(env, (ExecutableElement) elem));
+                }
             }
         }
         

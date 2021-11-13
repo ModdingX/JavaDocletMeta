@@ -5,7 +5,6 @@ import java.util.Map;
 public class HtmlQuote {
     
     private static final Map<Integer, String> SPECIAL_QUOTES = Map.of(
-            (int) '\n', "<br>",
             (int) '\r', "",
             (int) '<', "&lt;",
             (int) '>', "&gt;",
@@ -15,15 +14,23 @@ public class HtmlQuote {
     
     public static String quote(String str) {
         StringBuilder sb = new StringBuilder();
-        str.codePoints().forEach(cp -> {
+        boolean lastWasNewline = false;
+        for (int cp : str.codePoints().toArray()) {
             if (SPECIAL_QUOTES.containsKey(cp)) {
                 sb.append(SPECIAL_QUOTES.get(cp));
+            } else if (cp == '\n') {
+                if (!lastWasNewline) {
+                    sb.append(" ");
+                } else {
+                    sb.append("<br>");
+                }
+                lastWasNewline = !lastWasNewline;
             } else if (cp > 127 || Character.isISOControl(cp)) {
                 sb.append("&#").append(cp).append(";");
             } else {
                 sb.appendCodePoint(cp);
             }
-        });
+        }
         return sb.toString();
     }
 }
