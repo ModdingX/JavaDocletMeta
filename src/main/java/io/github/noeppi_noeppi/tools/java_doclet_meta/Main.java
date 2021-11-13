@@ -51,6 +51,7 @@ public class Main implements Doclet {
     public Set<? extends Option> getSupportedOptions() {
         return Set.of(
                 destinationDir,
+                excludedPackages,
                 new UselessOption(1, "-notimestamp"),
                 new UselessOption(1, "-windowtitle"),
                 new UselessOption(1, "-doctitle")
