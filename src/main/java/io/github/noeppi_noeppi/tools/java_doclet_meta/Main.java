@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class Main implements Doclet {
+    
+    public static final SourceVersion MIN_SOURCE_VERSION = SourceVersion.RELEASE_16;
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     public static final Gson GSON = ((Supplier<Gson>) () -> {
@@ -60,7 +62,8 @@ public class Main implements Doclet {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.RELEASE_16;
+        SourceVersion latest = SourceVersion.latestSupported();
+        return latest.ordinal() >= MIN_SOURCE_VERSION.ordinal() ? latest: MIN_SOURCE_VERSION;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class Main implements Doclet {
             DocIndex index = new DocIndex();
             for (Element element : environment.getIncludedElements()) {
                 PackageElement pkg = env.elements().getPackageOf(element);
-                if (pkg != null && !excluded.contains(pkg.getQualifiedName().toString()) && !element.getModifiers().contains(Modifier.PRIVATE)) {
+                if ((pkg == null || !excluded.contains(pkg.getQualifiedName().toString())) && !element.getModifiers().contains(Modifier.PRIVATE)) {
                     if ((element.getKind().isClass() || element.getKind().isInterface()) && element instanceof TypeElement type) {
                         ClassData data = ClassData.from(env, type);
                         index.add(data);
