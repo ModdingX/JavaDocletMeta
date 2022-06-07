@@ -1,8 +1,8 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.util;
+package org.moddingx.java_doclet_meta.util;
 
 import com.sun.source.doctree.*;
 import com.sun.source.util.DocTreePath;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.DocEnv;
+import org.moddingx.java_doclet_meta.DocEnv;
 
 import javax.annotation.Nullable;
 import javax.lang.model.element.*;

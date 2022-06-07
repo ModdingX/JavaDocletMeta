@@ -1,4 +1,4 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.option;
+package org.moddingx.java_doclet_meta.option;
 
 import java.util.List;
 

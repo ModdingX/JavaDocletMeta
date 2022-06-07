@@ -1,9 +1,9 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.record.block;
+package org.moddingx.java_doclet_meta.record.block;
 
 import com.google.gson.JsonObject;
 import com.sun.source.doctree.ReferenceTree;
 import com.sun.source.util.DocTreePath;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.DocEnv;
+import org.moddingx.java_doclet_meta.DocEnv;
 
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;

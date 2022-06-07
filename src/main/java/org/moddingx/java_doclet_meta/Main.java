@@ -1,14 +1,14 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta;
+package org.moddingx.java_doclet_meta;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.option.PackagesOption;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.option.PathOption;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.option.UselessOption;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.record.ClassData;
 import jdk.javadoc.doclet.Doclet;
 import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
+import org.moddingx.java_doclet_meta.option.PackagesOption;
+import org.moddingx.java_doclet_meta.option.PathOption;
+import org.moddingx.java_doclet_meta.option.UselessOption;
+import org.moddingx.java_doclet_meta.record.ClassData;
 
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -21,19 +21,19 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class Main implements Doclet {
     
     public static final SourceVersion MIN_SOURCE_VERSION = SourceVersion.RELEASE_16;
 
-    @SuppressWarnings("TrivialFunctionalExpressionUsage")
-    public static final Gson GSON = ((Supplier<Gson>) () -> {
+    public static final Gson GSON;
+
+    static {
         GsonBuilder builder = new GsonBuilder();
         builder.disableHtmlEscaping();
-        return builder.create();
-    }).get();
-    
+        GSON = builder.create();
+    }
+
     private final PathOption destinationDir = new PathOption("Destination directory", "-d");
     private final PackagesOption excludedPackages = new PackagesOption("Exclude a package", "--exclude-package");
     

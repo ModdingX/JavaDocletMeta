@@ -1,4 +1,4 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta;
+package org.moddingx.java_doclet_meta;
 
 import com.sun.source.util.DocTrees;
 

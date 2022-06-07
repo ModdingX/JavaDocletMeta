@@ -1,9 +1,9 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.record;
+package org.moddingx.java_doclet_meta.record;
 
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.DocEnv;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.util.JsonUtil;
+import org.moddingx.java_doclet_meta.DocEnv;
+import org.moddingx.java_doclet_meta.util.JsonUtil;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;

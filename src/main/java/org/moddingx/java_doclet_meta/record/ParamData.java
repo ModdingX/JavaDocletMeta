@@ -1,4 +1,4 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.record;
+package org.moddingx.java_doclet_meta.record;
 
 import com.google.gson.JsonObject;
 import com.sun.source.doctree.DocCommentTree;
@@ -6,8 +6,8 @@ import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.ParamTree;
 import com.sun.source.util.DocTreePath;
 import com.sun.source.util.TreePath;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.DocEnv;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.util.HtmlConverter;
+import org.moddingx.java_doclet_meta.DocEnv;
+import org.moddingx.java_doclet_meta.util.HtmlConverter;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;

@@ -1,9 +1,9 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta;
+package org.moddingx.java_doclet_meta;
 
 import com.google.gson.JsonObject;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.record.ClassData;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.record.FieldData;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.util.JsonUtil;
+import org.moddingx.java_doclet_meta.record.ClassData;
+import org.moddingx.java_doclet_meta.record.FieldData;
+import org.moddingx.java_doclet_meta.util.JsonUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;

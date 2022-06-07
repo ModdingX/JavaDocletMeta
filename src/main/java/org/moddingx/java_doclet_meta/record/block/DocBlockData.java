@@ -1,10 +1,10 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.record.block;
+package org.moddingx.java_doclet_meta.record.block;
 
 import com.google.gson.JsonObject;
 import com.sun.source.doctree.*;
 import com.sun.source.util.DocTreePath;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.DocEnv;
-import io.github.noeppi_noeppi.tools.java_doclet_meta.util.HtmlConverter;
+import org.moddingx.java_doclet_meta.DocEnv;
+import org.moddingx.java_doclet_meta.util.HtmlConverter;
 
 import java.util.Locale;
 import java.util.Optional;

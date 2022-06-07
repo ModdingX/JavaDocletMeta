@@ -1,4 +1,4 @@
-package io.github.noeppi_noeppi.tools.java_doclet_meta.record.block;
+package org.moddingx.java_doclet_meta.record.block;
 
 import com.google.gson.JsonObject;
 
