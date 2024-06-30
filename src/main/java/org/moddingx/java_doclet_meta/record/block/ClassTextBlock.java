@@ -3,7 +3,7 @@ package org.moddingx.java_doclet_meta.record.block;
 import com.google.gson.JsonObject;
 import com.sun.source.doctree.ReferenceTree;
 import com.sun.source.util.DocTreePath;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nullable;
 import org.moddingx.java_doclet_meta.DocEnv;
 
 import javax.lang.model.element.Element;

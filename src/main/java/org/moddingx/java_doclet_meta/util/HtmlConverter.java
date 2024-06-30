@@ -2,7 +2,7 @@ package org.moddingx.java_doclet_meta.util;
 
 import com.sun.source.doctree.*;
 import com.sun.source.util.DocTreePath;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nullable;
 import org.moddingx.java_doclet_meta.DocEnv;
 
 import javax.lang.model.element.*;
