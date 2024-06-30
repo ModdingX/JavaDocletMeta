@@ -3,13 +3,14 @@ package org.moddingx.java_doclet_meta.record.block;
 import com.google.gson.JsonObject;
 import com.sun.source.doctree.*;
 import com.sun.source.util.DocTreePath;
+import com.sun.source.util.DocTreeScanner;
 import org.moddingx.java_doclet_meta.DocEnv;
 import org.moddingx.java_doclet_meta.util.HtmlConverter;
 
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public interface DocBlockData{
+public sealed interface DocBlockData permits TextBlock, ClassTextBlock {
     
     Type type();
     
@@ -21,6 +22,25 @@ public interface DocBlockData{
     }
     
     void addProperties(JsonObject json);
+    
+    static List<DocBlockData> fromInline(DocEnv env, DocTreePath basePath, List<DocBlockData> blocks, List<? extends DocTree> inline) {
+        // Inline return tags in the main description should act as separate block tags.
+        Set<DocBlockData.Type> knownTypes = new HashSet<>(blocks.stream().map(DocBlockData::type).collect(Collectors.toUnmodifiableSet()));
+        List<DocBlockData> inlineBlocks = new ArrayList<>();
+
+        DocTreeScanner<Void, Void> scanner = new DocTreeScanner<>() {
+            @Override
+            public Void visitReturn(ReturnTree tree, Void unused) {
+                if (tree.isInline() && knownTypes.add(Type.RETURN)) {
+                    inlineBlocks.add(new TextBlock(Type.RETURN, HtmlConverter.asDocHtml(env, DocTreePath.getPath(basePath, tree), tree.getDescription())));
+                }
+                return super.visitReturn(tree, unused);
+            }
+        };
+
+        scanner.scan(inline, null);
+        return List.copyOf(inlineBlocks);
+    }
     
     static Optional<DocBlockData> from(DocEnv env, DocTreePath path, DocTree tree) {
         // Ignore parameters, they are merged with ParamData

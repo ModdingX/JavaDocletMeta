@@ -25,7 +25,7 @@ public class PathOption extends BaseOption {
 
     @Override
     public boolean process(String option, List<String> arguments) {
-        path = Paths.get(arguments.get(0));
+        path = Paths.get(arguments.getFirst());
         return true;
     }
 

@@ -24,7 +24,7 @@ public class PackagesOption extends BaseOption {
 
     @Override
     public boolean process(String option, List<String> arguments) {
-        this.packages.add(arguments.get(0).replace('/', '.'));
+        this.packages.add(arguments.getFirst().replace('/', '.'));
         return true;
     }
     

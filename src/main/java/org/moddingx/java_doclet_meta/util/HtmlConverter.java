@@ -2,9 +2,9 @@ package org.moddingx.java_doclet_meta.util;
 
 import com.sun.source.doctree.*;
 import com.sun.source.util.DocTreePath;
+import org.jetbrains.annotations.Nullable;
 import org.moddingx.java_doclet_meta.DocEnv;
 
-import javax.annotation.Nullable;
 import javax.lang.model.element.*;
 import java.util.List;
 
@@ -51,6 +51,11 @@ public class HtmlConverter {
                 case VALUE -> sb.append(inlineValue(env, path, ((ValueTree) tree).getReference()));
                 case SYSTEM_PROPERTY -> sb.append("<system_property>").append(HtmlQuote.quote(((SystemPropertyTree) tree).getPropertyName().toString())).append("</system_property>");
                 case IDENTIFIER -> sb.append(HtmlQuote.quote(((IdentifierTree) tree).getName().toString()));
+                case RETURN -> {
+                    if (((ReturnTree) tree).isInline()) {
+                        sb.append(HtmlQuote.quote("Returns ")).append(asDocHtml(env, basePath, ((ReturnTree) tree).getDescription())).append(HtmlQuote.quote("."));
+                    }
+                }
                 case TEXT -> sb.append(HtmlQuote.quote(((TextTree) tree).getBody()));
                 case UNKNOWN_INLINE_TAG -> {
                     UnknownInlineTagTree tag = (UnknownInlineTagTree) tree;

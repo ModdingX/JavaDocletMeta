@@ -24,14 +24,12 @@ public record FieldData(
         json.add("modifiers", JsonUtil.array(modifiers));
         json.add("type", type.json());
         constant.ifPresent(o -> {
-            if (o instanceof String str) {
-                json.addProperty("constant", str);
-            } else if (o instanceof Number n) {
-                json.addProperty("constant", n);
-            } else if (o instanceof Boolean b) {
-                json.addProperty("constant", b);
-            } else if (o instanceof Character c) {
-                json.addProperty("constant", c);
+            switch (o) {
+                case String str -> json.addProperty("constant", str);
+                case Number n -> json.addProperty("constant", n);
+                case Boolean b -> json.addProperty("constant", b);
+                case Character c -> json.addProperty("constant", c);
+                default -> {}
             }
         });
         doc.ifPresent(d -> json.add("doc", d.json()));

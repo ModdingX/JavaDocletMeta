@@ -12,6 +12,7 @@ import org.moddingx.java_doclet_meta.util.JsonUtil;
 import javax.lang.model.element.Element;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public record DocData(
         String summary,
@@ -38,6 +39,7 @@ public record DocData(
         List<DocBlockData> properties = tree.getBlockTags().stream()
                 .flatMap(tag -> DocBlockData.from(env, DocTreePath.getPath(basePath, tag), tag).stream())
                 .toList();
-        return Optional.of(new DocData(summary, text, properties));
+        List<DocBlockData> inlineProperties = DocBlockData.fromInline(env, basePath, properties, tree.getFullBody());
+        return Optional.of(new DocData(summary, text, Stream.concat(properties.stream(), inlineProperties.stream()).toList()));
     }
 }
