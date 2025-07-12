@@ -43,7 +43,7 @@ public record ParamData(
         for (DocTree block : tree.getBlockTags()) {
             if (block.getKind() == DocTree.Kind.PARAM && block instanceof ParamTree pt) {
                 if (!pt.isTypeParameter() && name.equals(pt.getName().getName().toString())) {
-                    return Optional.of(HtmlConverter.asDocHtml(env, DocTreePath.getPath(basePath, pt), pt.getDescription()));
+                    return Optional.of(HtmlConverter.asDocHtml(env, element, DocTreePath.getPath(basePath, pt), pt.getDescription()));
                 }
             }
         }

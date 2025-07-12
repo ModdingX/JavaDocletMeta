@@ -10,62 +10,73 @@ import java.util.List;
 
 public class HtmlConverter {
     
-    public static String asDocHtml(DocEnv env, @Nullable DocTreePath basePath, List<? extends DocTree> textElems) {
+    public static String asDocHtml(DocEnv env, Element context, @Nullable DocTreePath basePath, List<? extends DocTree> textElems) {
         StringBuilder sb = new StringBuilder();
-        for (DocTree tree : textElems) {
-            DocTreePath path = basePath == null ? null : DocTreePath.getPath(basePath, tree);
-            switch (tree.getKind()) {
-                case ENTITY -> sb.append(((EntityTree) tree).getName());
-                case START_ELEMENT -> {
-                    StartElementTree elem = (StartElementTree) tree; 
-                    sb.append("<").append(elem.getName());
-                    for (DocTree attrTree : elem.getAttributes()) {
-                        if (attrTree.getKind() == DocTree.Kind.ATTRIBUTE && attrTree instanceof AttributeTree attr) {
-                            sb.append(" ").append(attr.getName().toString());
-                            if (attr.getValueKind() != AttributeTree.ValueKind.EMPTY) {
-                                sb.append("=\"");
-                                // Only supports plain text
-                                for (DocTree attrContentTree : attr.getValue()) {
-                                    if (attrContentTree.getKind() == DocTree.Kind.TEXT) {
-                                        sb.append(((TextTree) attrContentTree).getBody()
-                                                .replace("\\", "\\\\")
-                                                .replace("\"", "\\\"")
-                                        );
-                                    }
-                                }
-                                sb.append("\"");
-                            }
-                        }
-                    }
-                    sb.append(">");
-                }
-                case END_ELEMENT -> {
-                    EndElementTree elem = (EndElementTree) tree;
-                    sb.append("</").append(elem.getName()).append(">");
-                }
-                case CODE -> sb.append("<code>").append(HtmlQuote.quote(((LiteralTree) tree).getBody().getBody())).append("</code>");
-                case LITERAL -> sb.append("<literal>").append(HtmlQuote.quote(((LiteralTree) tree).getBody().getBody())).append("</literal>");
-                case ERRONEOUS -> sb.append(HtmlQuote.quote(((ErroneousTree) tree).getBody()));
-                case LINK -> sb.append(linkTag(env, "ref", path, ((LinkTree) tree).getReference(), ((LinkTree) tree).getLabel()));
-                case LINK_PLAIN -> sb.append(linkTag(env, "refp", path, ((LinkTree) tree).getReference(), ((LinkTree) tree).getLabel()));
-                case VALUE -> sb.append(inlineValue(env, path, ((ValueTree) tree).getReference()));
-                case SYSTEM_PROPERTY -> sb.append("<system_property>").append(HtmlQuote.quote(((SystemPropertyTree) tree).getPropertyName().toString())).append("</system_property>");
-                case IDENTIFIER -> sb.append(HtmlQuote.quote(((IdentifierTree) tree).getName().toString()));
-                case RETURN -> {
-                    if (((ReturnTree) tree).isInline()) {
-                        sb.append(HtmlQuote.quote("Returns ")).append(asDocHtml(env, basePath, ((ReturnTree) tree).getDescription())).append(HtmlQuote.quote("."));
-                    }
-                }
-                case TEXT -> sb.append(HtmlQuote.quote(((TextTree) tree).getBody()));
-                case UNKNOWN_INLINE_TAG -> {
-                    UnknownInlineTagTree tag = (UnknownInlineTagTree) tree;
-                    sb.append("<").append(tag.getTagName()).append(">");
-                    sb.append(asDocHtml(env, path, tag.getContent()));
-                    sb.append("</").append(tag.getTagName()).append(">");
+        List<DocTreePreprocessor.ProcessedDocTree> processedElems = DocTreePreprocessor.process(context, textElems);
+        for (DocTreePreprocessor.ProcessedDocTree processedTree : processedElems) {
+            switch (processedTree) {
+                case DocTreePreprocessor.RawHtml(String html) -> sb.append(html);
+                case DocTreePreprocessor.WrappedDocTree(DocTree tree) -> {
+                    DocTreePath path = basePath == null ? null : DocTreePath.getPath(basePath, tree);
+                    processDocTree(sb, env, context, path, tree);
                 }
             }
         }
         return sb.toString();
+    }
+    
+    private static void processDocTree(StringBuilder sb, DocEnv env, Element context, @Nullable DocTreePath path, DocTree tree) {
+        switch (tree.getKind()) {
+            case ENTITY -> sb.append(((EntityTree) tree).getName());
+            case START_ELEMENT -> {
+                StartElementTree elem = (StartElementTree) tree;
+                sb.append("<").append(elem.getName());
+                for (DocTree attrTree : elem.getAttributes()) {
+                    if (attrTree.getKind() == DocTree.Kind.ATTRIBUTE && attrTree instanceof AttributeTree attr) {
+                        sb.append(" ").append(attr.getName().toString());
+                        if (attr.getValueKind() != AttributeTree.ValueKind.EMPTY) {
+                            sb.append("=\"");
+                            // Only supports plain text
+                            for (DocTree attrContentTree : attr.getValue()) {
+                                if (attrContentTree.getKind() == DocTree.Kind.TEXT) {
+                                    sb.append(((TextTree) attrContentTree).getBody()
+                                            .replace("\\", "\\\\")
+                                            .replace("\"", "\\\"")
+                                    );
+                                }
+                            }
+                            sb.append("\"");
+                        }
+                    }
+                }
+                sb.append(">");
+            }
+            case END_ELEMENT -> {
+                EndElementTree elem = (EndElementTree) tree;
+                sb.append("</").append(elem.getName()).append(">");
+            }
+            case CODE -> sb.append("<code>").append(HtmlQuote.quote(((LiteralTree) tree).getBody().getBody())).append("</code>");
+            case LITERAL -> sb.append("<literal>").append(HtmlQuote.quote(((LiteralTree) tree).getBody().getBody())).append("</literal>");
+            case ERRONEOUS -> sb.append(HtmlQuote.quote(((ErroneousTree) tree).getBody()));
+            case LINK -> sb.append(linkTag(env, "ref", context, path, ((LinkTree) tree).getReference(), ((LinkTree) tree).getLabel()));
+            case LINK_PLAIN -> sb.append(linkTag(env, "refp", context, path, ((LinkTree) tree).getReference(), ((LinkTree) tree).getLabel()));
+            case VALUE -> sb.append(inlineValue(env, path, ((ValueTree) tree).getReference()));
+            case SYSTEM_PROPERTY -> sb.append("<system_property>").append(HtmlQuote.quote(((SystemPropertyTree) tree).getPropertyName().toString())).append("</system_property>");
+            case IDENTIFIER -> sb.append(HtmlQuote.quote(((IdentifierTree) tree).getName().toString()));
+            case RETURN -> {
+                if (((ReturnTree) tree).isInline()) {
+                    sb.append(HtmlQuote.quote("Returns ")).append(asDocHtml(env, context, path, ((ReturnTree) tree).getDescription())).append(HtmlQuote.quote("."));
+                }
+            }
+            case TEXT -> sb.append(HtmlQuote.quote(((TextTree) tree).getBody()));
+            case MARKDOWN -> throw new IllegalStateException("Markdown text in preprocessed DocTree.");
+            case UNKNOWN_INLINE_TAG -> {
+                UnknownInlineTagTree tag = (UnknownInlineTagTree) tree;
+                sb.append("<").append(tag.getTagName()).append(">");
+                sb.append(asDocHtml(env, context, path, tag.getContent()));
+                sb.append("</").append(tag.getTagName()).append(">");
+            }
+        }
     }
     
     private static String inlineValue(DocEnv env, @Nullable DocTreePath basePath, ReferenceTree reference) {
@@ -78,14 +89,14 @@ public class HtmlConverter {
             }
         }
         // If no field was found or no constant expression exists, just link the member
-        return linkTag(env, "ref", basePath, reference, (String) null);
+        return linkTag(env, "ref", basePath, reference, null);
     }
     
-    private static String linkTag(DocEnv env, String tagName, @Nullable DocTreePath basePath, ReferenceTree reference, @Nullable List<? extends DocTree> textContent) {
+    private static String linkTag(DocEnv env, String tagName, Element context, @Nullable DocTreePath basePath, ReferenceTree reference, @Nullable List<? extends DocTree> textContent) {
         if (textContent == null || textContent.isEmpty()) {
-            return linkTag(env, tagName, basePath, reference, (String) null);
+            return linkTag(env, tagName, basePath, reference, null);
         } else {
-            return linkTag(env, tagName, basePath, reference, asDocHtml(env, basePath, textContent));
+            return linkTag(env, tagName, basePath, reference, asDocHtml(env, context, basePath, textContent));
         }
     }
     
