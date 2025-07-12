@@ -34,12 +34,12 @@ public record DocData(
         DocCommentTree tree = env.docs().getDocCommentTree(elemPath);
         if (tree == null) return Optional.empty();
         DocTreePath basePath = DocTreePath.getPath(elemPath, tree, tree);
-        String summary = HtmlConverter.asDocHtml(env, basePath, tree.getFirstSentence());
-        String text = HtmlConverter.asDocHtml(env, basePath, tree.getFullBody());
+        String summary = HtmlConverter.asDocHtml(env, element, basePath, tree.getFirstSentence());
+        String text = HtmlConverter.asDocHtml(env, element, basePath, tree.getFullBody());
         List<DocBlockData> properties = tree.getBlockTags().stream()
-                .flatMap(tag -> DocBlockData.from(env, DocTreePath.getPath(basePath, tag), tag).stream())
+                .flatMap(tag -> DocBlockData.from(env, element, DocTreePath.getPath(basePath, tag), tag).stream())
                 .toList();
-        List<DocBlockData> inlineProperties = DocBlockData.fromInline(env, basePath, properties, tree.getFullBody());
+        List<DocBlockData> inlineProperties = DocBlockData.fromInline(env, element, basePath, properties, tree.getFullBody());
         return Optional.of(new DocData(summary, text, Stream.concat(properties.stream(), inlineProperties.stream()).toList()));
     }
 }
