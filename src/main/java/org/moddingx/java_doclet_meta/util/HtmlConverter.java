@@ -102,9 +102,11 @@ public class HtmlConverter {
         }
     }
 
-    // Returned string must be empty or start with a space
+    // Returned string must be null or start with a space
     private static String getTargetParams(DocEnv env, Element target) {
-        if (target.getKind() == ElementKind.PACKAGE && target instanceof PackageElement pkg) {
+        if (target.getKind() == ElementKind.MODULE && target instanceof ModuleElement module && !module.getQualifiedName().isEmpty()) {
+            return " module=\"" + module.getQualifiedName().toString() + "\"";
+        } else if (target.getKind() == ElementKind.PACKAGE && target instanceof PackageElement pkg) {
             return " pkg=\"" + pkg.getQualifiedName().toString().replace('.', '/') + "\"";
         } else if ((target.getKind().isClass() || target.getKind().isInterface())) {
             return getClassTargetParams(env, target);
