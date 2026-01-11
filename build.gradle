@@ -12,36 +12,43 @@ repositories {
 
 dependencies {
     implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-    implementation 'org.apache.commons:commons-text:1.12.0'
-    implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.jsoup:jsoup:1.17.2' 
+    implementation 'org.apache.commons:commons-text:1.15.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'org.jsoup:jsoup:1.22.1'
 }
 
-task fatjar(type: Jar) {
+var fatJar = tasks.register('fatjar', Jar) { task ->
     archiveClassifier = 'fatjar'
-    manifest = jar.manifest
-    with jar
-}
-build.dependsOn fatjar
+    manifest = tasks.named('jar', Jar).get().manifest
+    with tasks.named('jar', Jar).get()
 
-task configureFatJar {
-    doLast {
-        configurations.runtimeClasspath.each { dep ->
-            fatjar.from(project.zipTree(dep)) {
-                exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class'
-                duplicatesStrategy DuplicatesStrategy.INCLUDE
-            }
+    configurations.runtimeClasspath.each { dep ->
+        task.from(project.zipTree(dep)) {
+            exclude 'META-INF/MANIFEST.MF', 'META-INF/INDEX.LIST'
+            exclude 'module-info.class', 'META-INF/versions/*/module-info.class'
+            exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/SIG-*'
+            exclude 'META-INF/README*', 'META-INF/LICENSE*', 'META-INF/NOTICE*'
+            exclude 'META-INF/readme*', 'META-INF/license*', 'META-INF/notice*'
+            duplicatesStrategy DuplicatesStrategy.FAIL
+        }
+        task.from(project.zipTree(dep)) {
+            include 'META-INF', 'META-INF/**', 'module-info.class'
+            into "META-INF/libraries/${dep.name.replaceAll('\\.jar$', '')}/"
+            duplicatesStrategy DuplicatesStrategy.FAIL
         }
     }
-    outputs.upToDateWhen { false }
 }
-fatjar.dependsOn configureFatJar
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+var sourcesJar = tasks.register('sourcesJar', Jar) {
     archiveClassifier = 'sources'
     from sourceSets.main.allSource
+    dependsOn tasks.named('classes')
 }
-build.dependsOn sourcesJar
+
+tasks.named('build').configure { task ->
+    task.dependsOn fatJar
+    task.dependsOn sourcesJar
+}
 
 publishing {
     publications {
